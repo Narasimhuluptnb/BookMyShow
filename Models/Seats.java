@@ -6,13 +6,13 @@ import jakarta.persistence.Table;
 @Entity
 @Table(name = "seats")
 public class Seats extends BaseModel{
-	private ShowSeatType seatType;
+	private SeatType seatType;
 
-	public ShowSeatType getSeatType() {
+	public SeatType getSeatType() {
 		return seatType;
 	}
 
-	public void setSeatType(ShowSeatType seatType) {
+	public void setSeatType(SeatType seatType) {
 		this.seatType = seatType;
 	}
 
