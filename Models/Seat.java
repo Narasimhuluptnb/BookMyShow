@@ -5,7 +5,7 @@ import jakarta.persistence.Table;
 
 @Entity
 @Table(name = "seats")
-public class Seats extends BaseModel{
+public class Seat extends BaseModel{
 	private SeatType seatType;
 
 	public SeatType getSeatType() {

@@ -10,17 +10,17 @@ import jakarta.persistence.Table;
 public class Screens extends BaseModel{
 	private String name;
 	@OneToMany
-	private List<Seats> seats;
+	private List<Seat> seats;
 	public String getName() {
 		return name;
 	}
 	public void setName(String name) {
 		this.name = name;
 	}
-	public List<Seats> getSeats() {
+	public List<Seat> getSeats() {
 		return seats;
 	}
-	public void setSeats(List<Seats> seats) {
+	public void setSeats(List<Seat> seats) {
 		this.seats = seats;
 	}
 	
