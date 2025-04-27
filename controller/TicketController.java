@@ -1,7 +1,9 @@
 package com.BookMyShow.controller;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RestController;
 
 import com.BookMyShow.Dto.BookTicketRequestDto;
 import com.BookMyShow.Dto.BookTicketResponseDto;
@@ -10,7 +12,7 @@ import com.BookMyShow.Models.ResponseType;
 import com.BookMyShow.Service.TicketService;
 
 
-@Controller
+@RestController
 public class TicketController {
 	// This is to follow dependency inversion principle(every class should not depend on each other)
 	@Autowired
@@ -19,8 +21,9 @@ public class TicketController {
 	public TicketController(TicketService ticketService) {
 		this.ticketService = ticketService;
 	}
-
-	public BookTicketResponseDto BookTicket(BookTicketRequestDto requestDto) {
+	
+	@PostMapping("/BookTickets")
+	public BookTicketResponseDto BookTicket(@RequestBody BookTicketRequestDto requestDto) {
 		BookTicketResponseDto responseDto = new BookTicketResponseDto();
 		try {
 			Validations(requestDto);
