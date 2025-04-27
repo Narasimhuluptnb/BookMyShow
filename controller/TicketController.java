@@ -1,20 +1,30 @@
 package com.BookMyShow.controller;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 
 import com.BookMyShow.Dto.BookTicketRequestDto;
 import com.BookMyShow.Dto.BookTicketResponseDto;
 import com.BookMyShow.Exceptions.InvalidRequestException;
 import com.BookMyShow.Models.ResponseType;
+import com.BookMyShow.Service.TicketService;
 
 
 @Controller
 public class TicketController {
+	// This is to follow dependency inversion principle(every class should not depend on each other)
+	@Autowired
+	private TicketService ticketService;
+	// Constructor injection
+	public TicketController(TicketService ticketService) {
+		this.ticketService = ticketService;
+	}
 
 	public BookTicketResponseDto BookTicket(BookTicketRequestDto requestDto) {
 		BookTicketResponseDto responseDto = new BookTicketResponseDto();
 		try {
 			Validations(requestDto);
+			this.ticketService.BookTicket(requestDto.getSeatIds(),requestDto.getUserId(),requestDto.getShowId());
 			
 		}
 		catch (Exception e) 
