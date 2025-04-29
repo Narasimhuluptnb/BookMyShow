@@ -1,12 +1,15 @@
 package com.BookMyShow.Service;
 
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import javax.sound.midi.VoiceStatus;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.web.header.writers.frameoptions.XFrameOptionsHeaderWriter.XFrameOptionsMode;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,15 +17,22 @@ import org.springframework.transaction.annotation.Transactional;
 import com.BookMyShow.Exceptions.InvalidRequestException;
 import com.BookMyShow.Exceptions.SeatunavailableException;
 import com.BookMyShow.Models.Seat;
+import com.BookMyShow.Models.SeatType;
 import com.BookMyShow.Models.Seatstatus;
 import com.BookMyShow.Models.Show;
 import com.BookMyShow.Models.ShowSeat;
+import com.BookMyShow.Models.ShowSeatType;
 import com.BookMyShow.Models.Ticket;
+import com.BookMyShow.Models.TicketStatus;
 import com.BookMyShow.Models.User;
 import com.BookMyShow.Repository.SeatRepository;
 import com.BookMyShow.Repository.ShowRepository;
+import com.BookMyShow.Repository.ShowSeatTypeRepository;
 import com.BookMyShow.Repository.ShowseatRepository;
+import com.BookMyShow.Repository.TicketRepository;
 import com.BookMyShow.Repository.Userrepository;
+
+import ch.qos.logback.core.subst.Token.Type;
 
 
 @Service
@@ -32,16 +42,22 @@ public class TicketserviceImp implements TicketService{
     private final ShowRepository showRepository;
     private final SeatRepository seatRepository;
     private final ShowseatRepository showseatRepository;
+    private final TicketRepository ticketRepository;
+    private final ShowSeatTypeRepository showSeatTypeRepository;
 
     // ✅ Constructor Injection
     public TicketserviceImp(Userrepository userrepository,
                             ShowRepository showRepository,
                             SeatRepository seatRepository,
-                            ShowseatRepository showseatRepository) {
+                            ShowseatRepository showseatRepository,
+                            TicketRepository ticketRepository,
+                            ShowSeatTypeRepository showSeatTypeRepository) {
         this.userrepository = userrepository;
         this.showRepository = showRepository;
         this.seatRepository = seatRepository;
         this.showseatRepository = showseatRepository;
+        this.ticketRepository = ticketRepository;
+        this.showSeatTypeRepository = showSeatTypeRepository;
     }
 	
 	@Override
@@ -69,7 +85,29 @@ public class TicketserviceImp implements TicketService{
 		}
 		
 		BlockSeatsforUser(user.get(),show,seatids);
-		return null;
+		// Got all the seat types and mapped those values.
+		List<ShowSeatType> showSeatTypes = showSeatTypeRepository.findAllById(seatids);
+		Map<SeatType, Double> pricingMap = new HashMap<>();
+		
+		for (ShowSeatType x : showSeatTypes) {
+			pricingMap.put(x.getSeatType(),x.getPrice());
+		}
+		
+		double TotalAmount = 0;
+		for(Seat seat:seats) {
+			TotalAmount += pricingMap.get(seat.getSeatType());
+		}
+		
+		Ticket ticket = new Ticket();
+		ticket.setTicketStatus(TicketStatus.Unpaid);
+		ticket.setUsers(user.get());
+		ticket.setSeats(seats);
+		ticket.setShows(show);
+		ticket.setTotalAmount(TotalAmount);
+		
+		
+		
+		return ticketRepository.save(ticket);
 	}
 	
 	
