@@ -8,7 +8,7 @@ public class BookMyShowApplication {
 
 	public static void main(String[] args) {
 		SpringApplication.run(BookMyShowApplication.class, args);
-		System.out.println("Running");
+		System.out.println("Running check");
 	}
 
 }
